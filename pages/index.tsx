@@ -1,4 +1,5 @@
 import { Dots } from "$/components/dots";
+import detectObjects from "$/services/aws";
 import {
   Button,
   Container,
@@ -20,16 +21,15 @@ import {
   IconPaperclip,
   IconX,
 } from "@tabler/icons-react";
-import AWS from "aws-sdk";
 import { useRef, useState } from "react";
 
-AWS.config.update({
-  region: "Seoul",
-  credentials: {
-    accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
-    secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
-  },
-});
+// AWS.config.update({
+//   region: "Seoul",
+//   credentials: {
+//     accessKeyId: `${process.env.AWS_ACCESS_KEY_ID}`,
+//     secretAccessKey: `${process.env.AWS_SECRET_ACCESS_KEY}`,
+//   },
+// });
 
 // import { Dots } from "./Dots";
 
@@ -168,32 +168,10 @@ const Home = () => {
   });
 
   const handleSend = () => {
-    const rekognition = new AWS.Rekognition();
-    const reader = new FileReader();
-    const image = images?.[0];
-    reader.onload = () => {
-      const imageBytes = new Uint8Array(reader.result as ArrayBuffer);
-      rekognition.detectLabels(
-        {
-          Image: {
-            Bytes: imageBytes,
-          },
-        },
-        (err, data) => {
-          if (err) {
-            console.log("eerr", err, err.stack);
-          } else {
-            console.log(data);
-            setObjectData(data);
-          }
-        }
-      );
-    };
-    reader.readAsArrayBuffer(image);
-    console.log(objectData);
+    setObjectData(detectObjects(images?.[0]));
   };
 
-  console.log(images);
+  console.log(objectData);
 
   return (
     <Container className={classes.wrapper} size={1400}>
